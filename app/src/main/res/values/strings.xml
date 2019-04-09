@@ -2,5 +2,10 @@
     <string name="app_name">PetShop</string>
     <string name="join">join</string>
     <string name="login">login</string>
-    <string name="join">join</string>
+    <string name="ime">ime</string>
+    <string name="prezime">prezime</string>
+    <string name="email">email</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="registracija">registracija</string>
 </resources>
