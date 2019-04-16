@@ -37,13 +37,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/login"
-            android:id="@+id/loginButton"/>
+            android:id="@+id/bLogin"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/join"
-            android:id="@+id/joinButton"/>
+            android:id="@+id/bJoin"/>
     </LinearLayout>
 
 </LinearLayout>

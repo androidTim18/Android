@@ -124,7 +124,8 @@
                 android:hint="@string/password"
                 android:textSize="25sp"
                 android:id="@+id/regPasswordInput"
-                android:textStyle="italic"/>
+                android:textStyle="italic"
+                android:inputType="textPassword"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -142,7 +143,7 @@
             android:layout_gravity="center"
             android:layout_weight="3"
             android:textSize="20sp"
-            android:id="@+id/bRegRegisterA"/>
+            android:id="@+id/bRegisterA"/>
     </LinearLayout>
 
 </LinearLayout>
