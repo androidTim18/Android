@@ -1,28 +1,21 @@
 package android.projekat;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-public class ListAll extends Fragment implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+public class Search extends Fragment implements AdapterView.OnItemClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.all_list, container, false);
+        View rootView = inflater.inflate(R.layout.search, container, false);
 
-        ListView listAll = rootView.findViewById(R.id.listAll);
+        ListView listSearch = rootView.findViewById(R.id.listSearch);
         AdAdapter adapter = new AdAdapter(getActivity());
         Ad ad1 = new Ad();
         ad1.name = "Primer1";
@@ -31,9 +24,8 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
         ad1.birthday = "01/01/2019";
         ad1.photo = getResources().getDrawable(R.drawable.icon_paw);
         adapter.addAd(ad1);
-        listAll.setAdapter(adapter);
-        listAll.setOnItemClickListener(this);
-        listAll.setOnItemLongClickListener(this);
+        listSearch.setAdapter(adapter);
+        listSearch.setOnItemClickListener(this);
 
         Intent i = getActivity().getIntent();
         if(i.hasExtra("species")){
@@ -73,11 +65,5 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
 
         intent.putExtra("position", position);
         startActivity(intent);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        //if user == admin   -> delete ad
-        return false;
     }
 }

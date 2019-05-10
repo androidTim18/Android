@@ -113,6 +113,9 @@ public class AdListActivity extends AppCompatActivity {
                 case 1:
                     ListFav tab2 = new ListFav();
                     return tab2;
+                case 2:
+                    Search tab3 = new Search();
+                    return tab3;
                 default:
                     return null;
             }
@@ -120,7 +123,7 @@ public class AdListActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }
