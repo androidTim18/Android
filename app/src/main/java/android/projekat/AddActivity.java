@@ -75,7 +75,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             intent.putExtra("birthday", date.getText().toString());
             intent.putExtra("sex", sex.getText().toString());
             intent.putExtra("price", price.getText().toString() + spinner.getSelectedItem().toString());
-            intent.putExtra("availabile", true);
+            intent.putExtra("available", true);
             intent.putExtra("info", info.getText().toString());
             intent.putExtra("dateAdded", new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date()));
             intent.putExtra("favorite", false);

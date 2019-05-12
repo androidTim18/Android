@@ -64,7 +64,7 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
         intent.putExtra("birthday", ad.birthday);
         intent.putExtra("sex", ad.sex);
         intent.putExtra("price",ad.price);
-        intent.putExtra("availabile", ad.availabile);
+        intent.putExtra("available", ad.available);
         intent.putExtra("info", ad.info);
         intent.putExtra("dateAdded", ad.dateAdded);
         intent.putExtra("favorite", ad.favorite);

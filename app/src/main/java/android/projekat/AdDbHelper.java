@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import java.util.Date;
 
 
-public class DbHelper extends SQLiteOpenHelper {
+public class AdDbHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "ads.db";
+    public static final String DATABASE_NAME = "ads.adDb";
     public static final int DATABASE_VERSION = 1;
 
     public static final String TABLE_NAME = "ads";
@@ -30,15 +30,15 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final Boolean COLUMN_AVAILABLE = true;
     public static final String COLUMN_FAVORITE = "Favorite";
 
-    private SQLiteDatabase mDb = null;
+    private SQLiteDatabase adDb = null;
 
-    public DbHelper(Context context) {
+    public AdDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
+    public void onCreate(SQLiteDatabase adDb) {
+        adDb.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_AD_ID + " TEXT, " +
                 COLUMN_BREED + " TEXT, " +
@@ -55,12 +55,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase adDb, int oldVersion, int newVersion) {
 
     }
 
     public void insert(Ad ad) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase adDb = getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, ad.getName());
@@ -77,13 +77,13 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_FAVORITE, ad.isFavorite());
         values.put(String.valueOf(COLUMN_PHOTO), String.valueOf(ad.getPhoto()));
 
-        db.insert(TABLE_NAME, null, values);
+        adDb.insert(TABLE_NAME, null, values);
         close();
     }
 
     public Ad[] readAds() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null, null);
+        SQLiteDatabase adDb = getReadableDatabase();
+        Cursor cursor = adDb.query(TABLE_NAME, null, null, null, null, null, null, null);
 
         if (cursor.getCount() <= 0) {
             return null;
@@ -100,8 +100,8 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public Ad readAd(String index) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, COLUMN_AD_ID + "=?",
+        SQLiteDatabase adDb = getReadableDatabase();
+        Cursor cursor = adDb.query(TABLE_NAME, null, COLUMN_AD_ID + "=?",
                 new String[] {index}, null, null, null);
         cursor.moveToFirst();
         Ad ad = createAd(cursor);
@@ -111,8 +111,8 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void deleteAd(String index) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_NAME, COLUMN_AD_ID + "=?", new String[] {index});
+        SQLiteDatabase adDb = getWritableDatabase();
+        adDb.delete(TABLE_NAME, COLUMN_AD_ID + "=?", new String[] {index});
         close();
     }
 

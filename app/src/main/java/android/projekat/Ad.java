@@ -41,6 +41,8 @@ public class Ad {
         this.favorite = favorite;
     }
 
+    public Ad(){
+    };
 
     public String getAdId() {
         return adId;
@@ -142,8 +144,8 @@ public class Ad {
         return available;
     }
 
-    public void setAvailable(boolean availabile) {
-        this.available = availabile;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public boolean isFavorite() {
