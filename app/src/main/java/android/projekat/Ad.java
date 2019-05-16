@@ -23,7 +23,7 @@ public class Ad {
     public boolean favorite;
     public Drawable photo;
 
-
+//new Ad - fisrt time adding
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
               String info, String price, boolean available, boolean favorite,
@@ -72,7 +72,7 @@ public class Ad {
         this.available = available;
         this.favorite = favorite;
     }
-
+    //Constructor with all param - imageInBytes
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
               String info, String price, boolean available, boolean favorite,
@@ -95,6 +95,7 @@ public class Ad {
         this.available = available;
         this.favorite = favorite;
     }
+    //Constructor with all param - drawable photo
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
               String info, String price, boolean available, boolean favorite,

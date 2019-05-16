@@ -20,6 +20,8 @@ import java.util.Locale;
 import android.graphics.BitmapFactory;
 import java.io.ByteArrayInputStream;
 
+import static android.projekat.ListAll.adDbHelper;
+
 public class AddActivity extends AppCompatActivity implements View.OnClickListener{
 
     public EditText name;
@@ -75,38 +77,22 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         {
             Intent intent = new Intent(this, AdListActivity.class);
 
-            intent.putExtra("species", species.getText().toString());
-            intent.putExtra("breed", breed.getText().toString());
-            intent.putExtra("name", name.getText().toString());
-            intent.putExtra("birthday", date.getText().toString());
-            intent.putExtra("sex", sex.getText().toString());
-            intent.putExtra("price", price.getText().toString() + spinner.getSelectedItem().toString());
-            intent.putExtra("available", true);
-            intent.putExtra("info", info.getText().toString());
-            intent.putExtra("dateAdded", new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date()));
-            intent.putExtra("favorite", false);
             SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
             String owner = new String();
             owner = ((SharedPreferences) preferences).getString("user", null);
-            intent.putExtra("owner", owner);
-            intent.putExtra("location", "Lokacija");
             Bitmap image = (Bitmap) BitmapFactory.decodeResource(getResources(), R.drawable.icon_paw);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte [] imageInByte = stream.toByteArray();
-            intent.putExtra("photo", imageInByte);
+            byte[] imageInByte = stream.toByteArray();
 
-
-            //TODO: get location, img from storage, send all info to server, popup: Uspesno ste dodali oglas!, refresuj db u sl koraku
-
-/*            String today = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
-
-            Ad newAd = new Ad("0001", today, species.getText().toString(),
-                    breed.getText().toString(), name.getText().toString(), date.getText().toString(),
-                    sex.getText().toString(), "Novi Sad", "Petar Petrovic",
+            //TODO: get location, img from storage, send all info to server
+            Ad newAd = new Ad(species.getText().toString(), breed.getText().toString(), name.getText().toString(),
+                    date.getText().toString(), sex.getText().toString(), "Novi Sad", owner,
                     info.getText().toString(), (price.getText().toString() + spinner.getSelectedItem().toString()),
-                    true, true,null);
-*/
+                    true, false, imageInByte);
+            adDbHelper.insert(newAd);
+            toast = Toast.makeText(this, "Uspešno ste dodali oglas!", Toast.LENGTH_SHORT);
+            toast.show();
             startActivity(intent);
         }
 

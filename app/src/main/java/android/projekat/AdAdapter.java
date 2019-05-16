@@ -127,7 +127,8 @@ public class AdAdapter extends BaseAdapter {
                             FilteredArrList.add(new Ad(mAds.get(i).species,
                                     mAds.get(i).breed, mAds.get(i).name, mAds.get(i).birthday, mAds.get(i).sex,
                                     mAds.get(i).location, mAds.get(i).owner, mAds.get(i).info, mAds.get(i).price,
-                                    mAds.get(i).available, mAds.get(i).favorite, mAds.get(i).photo, mAds.get(i).adId, mAds.get(i).dateAdded ));
+                                    mAds.get(i).available, mAds.get(i).favorite, mAds.get(i).photo,
+                                    mAds.get(i).adId, mAds.get(i).dateAdded ));
                         }
                     }
                     // set the Filtered result to return

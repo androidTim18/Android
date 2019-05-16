@@ -1,11 +1,16 @@
 package android.projekat;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.ByteArrayInputStream;
+
+import static android.projekat.ListAll.adDbHelper;
 
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
     public Intent i;
@@ -19,6 +24,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     TextView info;
     TextView price;
     ImageView photo;
+    Ad ad = new Ad();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,25 +46,29 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         price = findViewById(R.id.d_price);
         photo = findViewById(R.id.d_img);
 
-        name.setText(i.getStringExtra("name"));
-        breed.setText(i.getStringExtra("breed"));
-        species.setText(i.getStringExtra("species"));
-        birthday.setText(i.getStringExtra("birthday"));
-        sex.setText(i.getStringExtra("sex"));
-        location.setText(i.getStringExtra("location"));
-        owner.setText(i.getStringExtra("owner"));
-        info.setText(i.getStringExtra("info"));
-        price.setText(i.getStringExtra("price"));
+        ad = adDbHelper.readAd(i.getStringExtra("adId"));
+
+        name.setText(ad.name);
+        breed.setText(ad.breed);
+        species.setText(ad.species);
+        birthday.setText(ad.birthday);
+        sex.setText(ad.sex);
+        location.setText(ad.location);
+        owner.setText(ad.owner);
+        info.setText(ad.info);
+        price.setText(ad.price);
+        photo.setImageDrawable(ad.photo);
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bFavorite:
-            //TODO Dodati na listu omiljenih, favorite = "true"
+                adDbHelper.makeAdFavorite(ad);
                 break;
             case R.id.bBuy:
-            //TODO Izbaciti sa liste available = "false"
+                adDbHelper.makeAdUnavailable(ad);
                 break;
         }
     }

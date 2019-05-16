@@ -14,6 +14,8 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SearchView;
 
+import static android.projekat.ListAll.adDbHelper;
+
 public class Search extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     RadioButton rbSpecies;
@@ -44,8 +46,14 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (rbBreed.isActivated()){
-                    adapter.getFilter().filter(s.toString());
+                if (rbBreed.isChecked()){
+                    Ad[] ads = adDbHelper.searchBreed(s.toString());
+                    adapter.update(ads);
+                }
+                else if (rbSpecies.isChecked())
+                {
+                    Ad[] ads = adDbHelper.searchSpecies(s.toString());
+                    adapter.update(ads);
                 }
             }
 
@@ -54,21 +62,8 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
 
             }
         });
-        Intent i = getActivity().getIntent();
-        if(i.hasExtra("species")){
-            Ad ad = new Ad();
-            ad.name = i.getStringExtra("name");
-            ad.breed = i.getStringExtra("breed");
-            ad.species = i.getStringExtra("species");
-            ad.birthday = i.getStringExtra("birthday");
-            ad.sex = i.getStringExtra("sex");
-            ad.location = i.getStringExtra("location");
-            ad.owner = i.getStringExtra("owner");
-            ad.info = i.getStringExtra("info");
-            ad.price = i.getStringExtra("price");
-            adapter.addAd(ad);
-            adapter.notifyDataSetChanged();
-        }
+
+
         return rootView;
     }
 
@@ -77,20 +72,8 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
 
         Intent intent = new Intent(getActivity(), DetailsActivity.class);
         Ad ad = (Ad) parent.getItemAtPosition(position);
-        intent.putExtra("species", ad.species);
-        intent.putExtra("breed", ad.breed);
-        intent.putExtra("name", ad.name);
-        intent.putExtra("birthday", ad.birthday);
-        intent.putExtra("sex", ad.sex);
-        intent.putExtra("price",ad.price);
-        intent.putExtra("available", ad.available);
-        intent.putExtra("info", ad.info);
-        intent.putExtra("dateAdded", ad.dateAdded);
-        intent.putExtra("favorite", ad.favorite);
-        intent.putExtra("owner", ad.owner);
-        intent.putExtra("location", ad.location);
 
-        intent.putExtra("position", position);
+        intent.putExtra("adId", ad.getAdId());
         startActivity(intent);
     }
 

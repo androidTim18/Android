@@ -100,7 +100,64 @@ public class AdDbHelper extends SQLiteOpenHelper {
 
     public Ad[] readAds() {
         SQLiteDatabase adDb = getReadableDatabase();
-        Cursor cursor = adDb.query(TABLE_NAME, null, null, null, null, null, null, null);
+        Cursor cursor = adDb.query(TABLE_NAME, null, null, null,
+                null, null, null, null);
+
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
+
+        Ad[] ads = new Ad[cursor.getCount()];
+        int i = 0;
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            ads[i++] = createAd(cursor);
+        }
+
+        close();
+        return ads;
+    }
+    public Ad[] readFavorites() {
+        SQLiteDatabase adDb = getReadableDatabase();
+        Cursor cursor = adDb.query(TABLE_NAME, null, COLUMN_FAVORITE + "=?",
+                new String[]{"true"}, null, null, null, null);
+
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
+
+        Ad[] ads = new Ad[cursor.getCount()];
+        int i = 0;
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            ads[i++] = createAd(cursor);
+        }
+
+        close();
+        return ads;
+    }
+
+    public Ad[] searchBreed(String breed) {
+        SQLiteDatabase adDb = getReadableDatabase();
+        Cursor cursor = adDb.query(TABLE_NAME, null, COLUMN_BREED + "=?",
+                new String[] {breed}, null, null, null, null);
+
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
+
+        Ad[] ads = new Ad[cursor.getCount()];
+        int i = 0;
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            ads[i++] = createAd(cursor);
+        }
+
+        close();
+        return ads;
+    }
+
+    public Ad[] searchSpecies(String species) {
+        SQLiteDatabase adDb = getReadableDatabase();
+        Cursor cursor = adDb.query(TABLE_NAME, null, COLUMN_SPECIES + "=?",
+                new String[] {species}, null, null, null, null);
 
         if (cursor.getCount() <= 0) {
             return null;
@@ -124,6 +181,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
         Ad ad = createAd(cursor);
 
         close();
+
         return ad;
     }
 
@@ -133,6 +191,59 @@ public class AdDbHelper extends SQLiteOpenHelper {
         close();
     }
 
+    public void makeAdFavorite(Ad ad){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, ad.getName());
+        values.put(COLUMN_AD_ID, ad.getAdId());
+        values.put(COLUMN_BREED, ad.getBreed());
+        values.put(COLUMN_SPECIES, ad.getSpecies());
+        values.put(COLUMN_BIRTHDAY, ad.getBirthday());
+        values.put(COLUMN_SEX, ad.getSex());
+        values.put(COLUMN_LOCATION, ad.getLocation());
+        values.put(COLUMN_OWNER, ad.getOwner());
+        values.put(COLUMN_INFO, ad.getInfo());
+        values.put(COLUMN_PRICE, ad.getPrice());
+        values.put(COLUMN_AVAILABLE, ad.isAvailable());
+        values.put(COLUMN_FAVORITE, "true");
+        values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
+
+        Drawable d = ad.photo;
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte [] imageInBytes = stream.toByteArray();
+        values.put(COLUMN_PHOTO, imageInBytes);
+        db.update(TABLE_NAME,values, "adId=?", new String[]{ad.getAdId()} );
+
+    }
+
+    public void makeAdUnavailable(Ad ad){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, ad.getName());
+        values.put(COLUMN_AD_ID, ad.getAdId());
+        values.put(COLUMN_BREED, ad.getBreed());
+        values.put(COLUMN_SPECIES, ad.getSpecies());
+        values.put(COLUMN_BIRTHDAY, ad.getBirthday());
+        values.put(COLUMN_SEX, ad.getSex());
+        values.put(COLUMN_LOCATION, ad.getLocation());
+        values.put(COLUMN_OWNER, ad.getOwner());
+        values.put(COLUMN_INFO, ad.getInfo());
+        values.put(COLUMN_PRICE, ad.getPrice());
+        values.put(COLUMN_AVAILABLE, "false");
+        values.put(COLUMN_FAVORITE, ad.isAvailable());
+        values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
+
+        Drawable d = ad.photo;
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte [] imageInBytes = stream.toByteArray();
+        values.put(COLUMN_PHOTO, imageInBytes);
+        db.update(TABLE_NAME,values, "adId=?", new String[]{ad.getAdId()} );
+
+    }
     private Ad createAd(Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
         String adId = cursor.getString(cursor.getColumnIndex(COLUMN_AD_ID));
@@ -150,6 +261,6 @@ public class AdDbHelper extends SQLiteOpenHelper {
         byte[] photo = cursor.getBlob(cursor.getColumnIndex(COLUMN_PHOTO));
 
         return new Ad(species, breed, name, birthday, sex, location, owner,
-                info, price, available, favorite, photo);
+                info, price, available, favorite, photo, adId, dateAdded);
     }
 }
