@@ -16,41 +16,54 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class ListAll extends Fragment implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+public class ListAll extends Fragment implements AdapterView.OnItemLongClickListener,
+        AdapterView.OnItemClickListener {
+
+    public AdAdapter adapter;
+    public AdDbHelper adDbHelper;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.all_list, container, false);
 
         ListView listAll = rootView.findViewById(R.id.listAll);
-        AdAdapter adapter = new AdAdapter(getActivity());
+        adapter = new AdAdapter(getActivity());
+        /*
         Ad ad1 = new Ad();
         ad1.name = "Primer1";
         ad1.breed = "Primer1";
         ad1.species = "Primer1";
         ad1.birthday = "01/01/2019";
         ad1.photo = getResources().getDrawable(R.drawable.icon_paw);
-        adapter.addAd(ad1);
+        adapter.addAd(ad1);*/
+
         listAll.setAdapter(adapter);
         listAll.setOnItemClickListener(this);
         listAll.setOnItemLongClickListener(this);
 
+        adDbHelper = new AdDbHelper(getActivity());
+
         Intent i = getActivity().getIntent();
         if(i.hasExtra("species")){
-            Ad ad = new Ad();
-            ad.name = i.getStringExtra("name");
-            ad.breed = i.getStringExtra("breed");
-            ad.species = i.getStringExtra("species");
-            ad.birthday = i.getStringExtra("birthday");
-            ad.sex = i.getStringExtra("sex");
-            ad.location = i.getStringExtra("location");
-            ad.owner = i.getStringExtra("owner");
-            ad.info = i.getStringExtra("info");
-            ad.price = i.getStringExtra("price");
-            adapter.addAd(ad);
-            adapter.notifyDataSetChanged();
+
+            Ad ad = new Ad(i.getStringExtra("species"), i.getStringExtra("breed"), i.getStringExtra("name"),
+                    i.getStringExtra("birthday"), i.getStringExtra("sex"), i.getStringExtra("location"),
+                    i.getStringExtra("owner"),  i.getStringExtra("info"), i.getStringExtra("price"),
+                    true, false, i.getByteArrayExtra("photo") );
+
+            adDbHelper.insert(ad);
+            Ad[] ads = adDbHelper.readAds();
+            adapter.update(ads);
         }
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Ad[] ads = adDbHelper.readAds();
+        adapter.update(ads);
     }
 
     @Override
@@ -58,6 +71,8 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
 
         Intent intent = new Intent(getActivity(), DetailsActivity.class);
         Ad ad = (Ad) parent.getItemAtPosition(position);
+
+        //TODO: intent.putExtra("adId", ad.adId); samo na osnovu id nek preuzme sa servera
         intent.putExtra("species", ad.species);
         intent.putExtra("breed", ad.breed);
         intent.putExtra("name", ad.name);

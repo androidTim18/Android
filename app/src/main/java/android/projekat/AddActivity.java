@@ -1,6 +1,8 @@
 package android.projekat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +12,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import android.graphics.BitmapFactory;
+import java.io.ByteArrayInputStream;
 
 public class AddActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -27,6 +32,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     public Spinner spinner;
     public ImageView photo;
     public Toast toast;
+    public Drawable drawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +85,28 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             intent.putExtra("info", info.getText().toString());
             intent.putExtra("dateAdded", new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date()));
             intent.putExtra("favorite", false);
-            intent.putExtra("owner", "Vlasnik");
+            SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+            String owner = new String();
+            owner = ((SharedPreferences) preferences).getString("user", null);
+            intent.putExtra("owner", owner);
             intent.putExtra("location", "Lokacija");
+            Bitmap image = (Bitmap) BitmapFactory.decodeResource(getResources(), R.drawable.icon_paw);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte [] imageInByte = stream.toByteArray();
+            intent.putExtra("photo", imageInByte);
 
+
+            //TODO: get location, img from storage, send all info to server, popup: Uspesno ste dodali oglas!, refresuj db u sl koraku
+
+/*            String today = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
+
+            Ad newAd = new Ad("0001", today, species.getText().toString(),
+                    breed.getText().toString(), name.getText().toString(), date.getText().toString(),
+                    sex.getText().toString(), "Novi Sad", "Petar Petrovic",
+                    info.getText().toString(), (price.getText().toString() + spinner.getSelectedItem().toString()),
+                    true, true,null);
+*/
             startActivity(intent);
         }
 

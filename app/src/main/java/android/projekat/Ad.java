@@ -1,8 +1,11 @@
 package android.projekat;
 
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.widget.ImageView;
+import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.io.ByteArrayInputStream;
 
 public class Ad {
     public String adId;
@@ -21,16 +24,45 @@ public class Ad {
     public Drawable photo;
 
 
-    public Ad(String adId, String dateAdded, String species, String breed, String name,
+    public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
               String info, String price, boolean available, boolean favorite,
-              Drawable photo) {
-        this.adId = adId;
-        this.dateAdded = dateAdded;
+              byte[] imageInByte) {
+        Random r = new Random();
+
+        Integer a = (r.nextInt((9999-1000)+1)+1000);
+
+        this.adId = a.toString();
+        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
         this.species = species;
         this.breed = breed;
         this.name = name;
-        this.photo = photo;
+        ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(imageInByte);
+        Drawable drw = Drawable.createFromStream(arrayInputStream, "photo");
+        this.photo = drw;
+        this.birthday = birthday;
+        this.sex = sex;
+        this.location = location;
+        this.owner = owner;
+        this.info = info;
+        this.price = price;
+        this.available = available;
+        this.favorite = favorite;
+    }
+    public Ad(String species, String breed, String name,
+              String birthday, String sex, String location, String owner,
+              String info, String price, boolean available, boolean favorite,
+              Drawable drw) {
+        Random r = new Random();
+
+        Integer a = (r.nextInt((9999 - 1000) + 1) + 1000);
+
+        this.adId = a.toString();
+        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
+        this.species = species;
+        this.breed = breed;
+        this.name = name;
+        this.photo = drw;
         this.birthday = birthday;
         this.sex = sex;
         this.location = location;
@@ -41,15 +73,53 @@ public class Ad {
         this.favorite = favorite;
     }
 
+    public Ad(String species, String breed, String name,
+              String birthday, String sex, String location, String owner,
+              String info, String price, boolean available, boolean favorite,
+              byte[] imageInByte, String adId, String dateAdded) {
+
+        this.adId = adId;
+        this.dateAdded = dateAdded;
+        this.species = species;
+        this.breed = breed;
+        this.name = name;
+        ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(imageInByte);
+        Drawable drw = Drawable.createFromStream(arrayInputStream, "photo");
+        this.photo = drw;
+        this.birthday = birthday;
+        this.sex = sex;
+        this.location = location;
+        this.owner = owner;
+        this.info = info;
+        this.price = price;
+        this.available = available;
+        this.favorite = favorite;
+    }
+    public Ad(String species, String breed, String name,
+              String birthday, String sex, String location, String owner,
+              String info, String price, boolean available, boolean favorite,
+              Drawable drw, String adId, String dateAdded) {
+
+        this.adId = adId;
+        this.dateAdded = dateAdded;
+        this.species = species;
+        this.breed = breed;
+        this.name = name;
+        this.photo = drw;
+        this.birthday = birthday;
+        this.sex = sex;
+        this.location = location;
+        this.owner = owner;
+        this.info = info;
+        this.price = price;
+        this.available = available;
+        this.favorite = favorite;
+    }
     public Ad(){
     };
 
     public String getAdId() {
         return adId;
-    }
-
-    public void setAdId(String userId) {
-        this.adId = userId;
     }
 
     public String getDateAdded() {

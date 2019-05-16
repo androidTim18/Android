@@ -2,11 +2,16 @@ package android.projekat;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 
@@ -16,7 +21,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
 
     public static final String TABLE_NAME = "ads";
-    public static final String COLUMN_AD_ID = "UserId";
+    public static final String COLUMN_AD_ID = "AdId";
     public static final String COLUMN_NAME = "Name";
     public static final String COLUMN_BREED = "Breed";
     public static final String COLUMN_SPECIES = "Species";
@@ -26,15 +31,17 @@ public class AdDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_OWNER = "Owner";
     public static final String COLUMN_INFO = "Info";
     public static final String COLUMN_PRICE = "Price";
-    public static final Drawable COLUMN_PHOTO = null;
-    public static final Boolean COLUMN_AVAILABLE = true;
-    public static final String COLUMN_FAVORITE = "Favorite";
+    public static final String COLUMN_PHOTO = "Photo";
+    public static final String COLUMN_AVAILABLE = "true";
+    public static final String COLUMN_FAVORITE = "false";
+    public static final String COLUMN_DATE_ADDED = "dateAdded";
 
     private SQLiteDatabase adDb = null;
 
     public AdDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase adDb) {
@@ -49,10 +56,13 @@ public class AdDbHelper extends SQLiteOpenHelper {
                 COLUMN_OWNER + " TEXT, " +
                 COLUMN_INFO + " TEXT, " +
                 COLUMN_PRICE + " TEXT, " +
-                COLUMN_AVAILABLE + " BOOLEAN, " +
-                COLUMN_FAVORITE + " BOOLEAN, " +
-                COLUMN_PHOTO + " DRAWABLE);" );
+                COLUMN_AVAILABLE + " TEXT, " +
+                COLUMN_FAVORITE + " TEXT, " +
+                COLUMN_DATE_ADDED + " TEXT, " +
+                COLUMN_PHOTO + " BLOB);"
+        );
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase adDb, int oldVersion, int newVersion) {
@@ -73,9 +83,16 @@ public class AdDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_OWNER, ad.getOwner());
         values.put(COLUMN_INFO, ad.getInfo());
         values.put(COLUMN_PRICE, ad.getPrice());
-        values.put(String.valueOf(COLUMN_AVAILABLE), ad.isAvailable());
+        values.put(COLUMN_AVAILABLE, ad.isAvailable());
         values.put(COLUMN_FAVORITE, ad.isFavorite());
-        values.put(String.valueOf(COLUMN_PHOTO), String.valueOf(ad.getPhoto()));
+        values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
+
+        Drawable d = ad.photo;
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte [] imageInBytes = stream.toByteArray();
+        values.put(COLUMN_PHOTO, imageInBytes);
 
         adDb.insert(TABLE_NAME, null, values);
         close();
@@ -127,12 +144,12 @@ public class AdDbHelper extends SQLiteOpenHelper {
         String owner = cursor.getString(cursor.getColumnIndex(COLUMN_OWNER));
         String info = cursor.getString(cursor.getColumnIndex(COLUMN_INFO));
         String price = cursor.getString(cursor.getColumnIndex(COLUMN_PRICE));
-        Boolean available = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(String.valueOf(COLUMN_AVAILABLE))));
+        String dateAdded = cursor.getString(cursor.getColumnIndex(COLUMN_DATE_ADDED));
+        Boolean available = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_AVAILABLE)));
         Boolean favorite = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_FAVORITE)));
-        Drawable photo = Drawable.createFromPath(cursor.getString(cursor.getColumnIndex(String.valueOf(COLUMN_PHOTO))));
-        Date dateAdded = new Date();
+        byte[] photo = cursor.getBlob(cursor.getColumnIndex(COLUMN_PHOTO));
 
-        return new Ad(adId, dateAdded.toString(), species, breed, name, birthday, sex, location, owner,
+        return new Ad(species, breed, name, birthday, sex, location, owner,
                 info, price, available, favorite, photo);
     }
 }

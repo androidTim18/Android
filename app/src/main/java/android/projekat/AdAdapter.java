@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ public class AdAdapter extends BaseAdapter {
 
     private Context mContext;
     private ArrayList<Ad> mAds;
+    private ArrayList<Ad> mDisplayAds;
 
     public AdAdapter(Context context) {
         mContext = context;
@@ -49,6 +51,16 @@ public class AdAdapter extends BaseAdapter {
         return position;
     }
 
+    public void update(Ad[] ads) {
+        mAds.clear();
+        if(ads != null) {
+            for(Ad ad : ads) {
+                mAds.add(ad);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -76,6 +88,58 @@ public class AdAdapter extends BaseAdapter {
 
         return view;
     }
+
+    public Filter getFilter() {
+        Filter filter = new Filter() {
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mDisplayAds = (ArrayList<Ad>) results.values;
+                notifyDataSetChanged();
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+                ArrayList<Ad> FilteredArrList = new ArrayList<Ad>();
+
+                if (mAds == null) {
+                    mAds = new ArrayList<Ad>(mDisplayAds); // saves the original data in mOriginalValues
+                }
+
+                /********
+                 *
+                 *  If constraint(CharSequence that is received) is null returns the mOriginalValues(Original) values
+                 *  else does the Filtering and returns FilteredArrList(Filtered)
+                 *
+                 ********/
+                if (constraint == null || constraint.length() == 0) {
+
+                    // set the Original result to return
+                    results.count = mAds.size();
+                    results.values = mAds;
+                } else {
+                    constraint = constraint.toString().toLowerCase();
+                    for (int i = 0; i < mAds.size(); i++) {
+                        String data = mAds.get(i).breed;
+                        if (data.toLowerCase().startsWith(constraint.toString())) {
+
+
+                            FilteredArrList.add(new Ad(mAds.get(i).species,
+                                    mAds.get(i).breed, mAds.get(i).name, mAds.get(i).birthday, mAds.get(i).sex,
+                                    mAds.get(i).location, mAds.get(i).owner, mAds.get(i).info, mAds.get(i).price,
+                                    mAds.get(i).available, mAds.get(i).favorite, mAds.get(i).photo, mAds.get(i).adId, mAds.get(i).dateAdded ));
+                        }
+                    }
+                    // set the Filtered result to return
+                    results.count = FilteredArrList.size();
+                    results.values = FilteredArrList;
+                }
+                return results;
+            }
+        };
+        return filter;
+    }
+
 
     private class ViewHolder {
         public ImageView image = null;

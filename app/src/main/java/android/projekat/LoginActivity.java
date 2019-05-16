@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     public EditText email;
     public EditText password;
     public Toast toast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         else
         {
+            //TODO: If Http response ok, change email tousername, block anyone from reg as admin
+            SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
+            ((SharedPreferences.Editor) editor).putString("user", email.getText().toString());
+            ((SharedPreferences.Editor) editor).apply();
             Intent intent = new Intent(this, AdListActivity.class);
             startActivity(intent);
         }

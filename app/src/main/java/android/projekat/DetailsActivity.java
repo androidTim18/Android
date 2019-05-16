@@ -55,10 +55,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bFavorite:
-            //TODO Dodati na listu omiljenih
+            //TODO Dodati na listu omiljenih, favorite = "true"
                 break;
             case R.id.bBuy:
-            //TODO Izbaciti sa liste
+            //TODO Izbaciti sa liste available = "false"
                 break;
         }
     }

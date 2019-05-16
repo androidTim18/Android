@@ -8,27 +8,35 @@
     tools:context=".AdListActivity$PlaceholderFragment"
     android:orientation="vertical">
 
-    <SearchView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </SearchView>
-    <LinearLayout
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <android.support.v7.widget.AppCompatCheckBox
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/vrsta"/>
+        android:id="@+id/searchFilter"
+        android:hint ="@string/pretraga">
+    </EditText>
 
-        <android.support.v7.widget.AppCompatCheckBox
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/rasa"/>
-    </LinearLayout>
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp">
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/vrsta"
+                android:id="@+id/rbSpecies"/>
 
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/rasa"
+                android:id="@+id/rbBreed"/>
+        </RadioGroup>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
