@@ -28,8 +28,7 @@
             android:weightSum="7">
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="@string/dodajsliku"
                 android:id="@+id/bAddImg"/>
             <ImageView
@@ -37,7 +36,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="3"
                 android:src="@drawable/icon_paw"
-                android:id="@+id/add_img"/>
+                android:id="@+id/add_img"
+                android:paddingTop="20dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

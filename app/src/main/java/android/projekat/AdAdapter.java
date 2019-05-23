@@ -75,12 +75,21 @@ public class AdAdapter extends BaseAdapter {
             holder.species = (TextView) view.findViewById(R.id.element_species);
             holder.breed = (TextView) view.findViewById(R.id.element_breed);
             holder.date = (TextView) view.findViewById(R.id.element_date);
+            holder.unavailable = (TextView) view.findViewById(R.id.el_unavailable);
             view.setTag(holder);
         }
 
         Ad ad = (Ad) getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.image.setImageDrawable(ad.photo);
+        if (ad.available = true){
+            holder.image.setImageDrawable(ad.photo);
+            holder.image.setVisibility(View.VISIBLE);
+            holder.unavailable.setVisibility(View.GONE);
+        }
+        else {
+            holder.image.setVisibility(View.GONE);
+            holder.unavailable.setVisibility(View.VISIBLE);
+        }
         holder.name.setText(ad.name);
         holder.species.setText(ad.species);
         holder.breed.setText(ad.breed);
@@ -148,5 +157,6 @@ public class AdAdapter extends BaseAdapter {
         public TextView species = null;
         public TextView breed = null;
         public TextView date = null;
+        public TextView unavailable = null;
     }
 }

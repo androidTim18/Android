@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
     android:orientation="vertical"
-    android:weightSum="8">
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:src="@drawable/icon_paw"
-        android:layout_gravity="center"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="5">
+        android:paddingTop="20dp">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -27,14 +23,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:src="@drawable/icon_paw"
-                android:id="@+id/d_img"/>
+                android:id="@+id/d_img"
+                android:paddingBottom="20dp"/>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:text="LOKACIJA"
-                android:textSize="30dp"
+                android:layout_height="wrap_content"
+                android:text="Lokacija: "
+                android:textSize="20dp"
+                android:paddingBottom="20dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
                 android:background ="@color/colorPrimary"
-                android:id="@+id/d_location"/>
+                android:id="@+id/d_location"
+                android:paddingBottom="20dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="italic"
+                android:textSize="20dp"
+                android:text="@string/datumddavanja"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:id="@+id/d_dateAdded"/>
 
         </LinearLayout>
         <LinearLayout
@@ -137,8 +151,7 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:weightSum="2"
         android:padding="10dp">
         <Button
@@ -154,5 +167,36 @@
             android:text="@string/kupovina"
             android:id="@+id/bBuy"/>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4">
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/comment_input"
+                android:layout_weight="3"
+                android:id="@+id/commentInput"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/dodaj"
+                android:layout_weight="1"
+                android:id="@+id/add_comment"/>
+        </LinearLayout>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentList">
+
+        </ListView>
+    </LinearLayout>
 
 </LinearLayout>
+</ScrollView>

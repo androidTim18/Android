@@ -14,12 +14,23 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        android:paddingTop="20dp">
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/icon_paw"
-            android:id="@+id/element_img"/>
+            android:id="@+id/element_img"
+            android:layout_gravity="center"
+            android:visibility="visible"/>
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="@string/PRODATO"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:id="@+id/el_unavailable"/>
 
     </LinearLayout>
     <LinearLayout

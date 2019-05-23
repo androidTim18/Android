@@ -38,17 +38,6 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
 
         adDbHelper = new AdDbHelper(getActivity());
 
- //       Intent i = getActivity().getIntent();
-  /*      if(i.hasExtra("species")){
-
-            Ad ad = new Ad(i.getStringExtra("species"), i.getStringExtra("breed"), i.getStringExtra("name"),
-                    i.getStringExtra("birthday"), i.getStringExtra("sex"), i.getStringExtra("location"),
-                    i.getStringExtra("owner"),  i.getStringExtra("info"), i.getStringExtra("price"),
-                    true, false, i.getByteArrayExtra("photo") );
-
-            adDbHelper.insert(ad);
-        }*/
-
         Ad[] ads = adDbHelper.readAds();
         adapter.update(ads);
 

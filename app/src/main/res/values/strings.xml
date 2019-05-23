@@ -108,4 +108,12 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="PRODATO">PRODATO</string>
+    <string name="neomiljeno">Izbaci iz omiljenih</string>
+    <string name="popup_buy">Potvdite kupovinu</string>
+    <string name="cancel">otkaži</string>
+    <string name="confirm">Potvrdi</string>
+    <string name="datumddavanja">Datum dodavanja:</string>
+    <string name="comment_input">Unesite komentar</string>
+    <string name="dodaj">dodaj</string>
 </resources>

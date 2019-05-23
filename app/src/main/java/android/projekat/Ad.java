@@ -1,6 +1,8 @@
 package android.projekat;
 
 import android.graphics.drawable.Drawable;
+
+import java.util.ArrayList;
 import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +24,7 @@ public class Ad {
     public boolean available;
     public boolean favorite;
     public Drawable photo;
+    public ArrayList<Comment> comments;
 
 //new Ad - fisrt time adding
     public Ad(String species, String breed, String name,
@@ -46,8 +49,8 @@ public class Ad {
         this.owner = owner;
         this.info = info;
         this.price = price;
-        this.available = available;
-        this.favorite = favorite;
+        this.available = true;
+        this.favorite = false;
     }
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
@@ -227,5 +230,7 @@ public class Ad {
         this.favorite = favorite;
     }
 
-
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+    }
 }

@@ -217,7 +217,32 @@ public class AdDbHelper extends SQLiteOpenHelper {
         db.update(TABLE_NAME,values, "adId=?", new String[]{ad.getAdId()} );
 
     }
+    public void removeAdFavorite(Ad ad){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, ad.getName());
+        values.put(COLUMN_AD_ID, ad.getAdId());
+        values.put(COLUMN_BREED, ad.getBreed());
+        values.put(COLUMN_SPECIES, ad.getSpecies());
+        values.put(COLUMN_BIRTHDAY, ad.getBirthday());
+        values.put(COLUMN_SEX, ad.getSex());
+        values.put(COLUMN_LOCATION, ad.getLocation());
+        values.put(COLUMN_OWNER, ad.getOwner());
+        values.put(COLUMN_INFO, ad.getInfo());
+        values.put(COLUMN_PRICE, ad.getPrice());
+        values.put(COLUMN_AVAILABLE, ad.isAvailable());
+        values.put(COLUMN_FAVORITE, "false");
+        values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
 
+        Drawable d = ad.photo;
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte [] imageInBytes = stream.toByteArray();
+        values.put(COLUMN_PHOTO, imageInBytes);
+        db.update(TABLE_NAME,values, "adId=?", new String[]{ad.getAdId()} );
+
+    }
     public void makeAdUnavailable(Ad ad){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
