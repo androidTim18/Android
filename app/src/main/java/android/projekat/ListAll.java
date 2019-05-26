@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.projekat.MainActivity.userDbHelper;
 
 public class ListAll extends Fragment implements AdapterView.OnItemLongClickListener,
         AdapterView.OnItemClickListener {
@@ -68,8 +69,8 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
 
         SharedPreferences preferences = this.getActivity().getSharedPreferences("preferences", MODE_PRIVATE);
         String user = new String();
-        user = ((SharedPreferences) preferences).getString("user", null);
-        if (user.equals("administrator")) {
+        user = ((SharedPreferences) preferences).getString("userId", null);
+        if (userDbHelper.isAdmin(user)) {
             Ad ad = (Ad) parent.getItemAtPosition(position);
             adDbHelper.deleteAd(ad.adId);
         }

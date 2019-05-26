@@ -8,27 +8,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 
-public class CommentAdapter extends ArrayAdapter<Comment> {
-    private Activity mActivity;
-
-    private Context mContext;
-    private ArrayList<Comment> mComments;
-
-    public CommentAdapter(Context context, ArrayList<Comment> comments) {
+public class CommentAdapter extends BaseAdapter {
+    protected Activity mActivity;
+    protected Context mContext;
+    protected ArrayList<Comment> mComments;
+/*
+    public CommentAdapter(Context context, Comment[] comments) {
         super(context, 0, comments);
 
-    }
-
-    public void addComment(Comment comment) {
-        mComments.add(comment);
-        notifyDataSetChanged();
+    }*/
+    public CommentAdapter(Context context) {
+        mContext = context;
+        mComments = new ArrayList<Comment>();
     }
 
     @Override
@@ -53,7 +50,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         return position;
     }
 
-    public void update(ArrayList<Comment> comments) {
+    public void update(Comment[] comments) {
         mComments.clear();
         if(comments != null) {
             for(Comment comment : comments) {
@@ -65,20 +62,24 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Comment comment = (Comment) getItem(position);
-        if(convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.comment, parent, false);
+        View view = convertView;
+
+        if(view == null) {
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.comment, null);
+            ViewHolder holder = new ViewHolder();
+            holder.text = (TextView) view.findViewById(R.id.comment_text);
+            holder.date = (TextView) view.findViewById(R.id.comment_date);
+            view.setTag(holder);
         }
-        ViewHolder holder = new ViewHolder();
-        holder.text = (TextView) convertView.findViewById(R.id.comment_text);
-        holder.date = (TextView) convertView.findViewById(R.id.comment_date);
 
-//        holder = (ViewHolder) convertView.getTag();
-
+        Comment comment= (Comment) getItem(position);
+        ViewHolder holder = (ViewHolder) view.getTag();
         holder.text.setText(comment.text);
         holder.date.setText(comment.date);
 
-        return convertView;
+        return view;
     }
 
     private class ViewHolder {

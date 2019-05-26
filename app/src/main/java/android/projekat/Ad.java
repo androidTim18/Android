@@ -233,4 +233,12 @@ public class Ad {
     public void addComment(Comment comment){
         this.comments.add(comment);
     }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
+    }
 }

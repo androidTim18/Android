@@ -36,6 +36,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_FAVORITE = "false";
     public static final String COLUMN_DATE_ADDED = "dateAdded";
 
+
     private SQLiteDatabase adDb = null;
 
     public AdDbHelper(Context context) {
@@ -269,6 +270,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
         db.update(TABLE_NAME,values, "adId=?", new String[]{ad.getAdId()} );
 
     }
+
     private Ad createAd(Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
         String adId = cursor.getString(cursor.getColumnIndex(COLUMN_AD_ID));

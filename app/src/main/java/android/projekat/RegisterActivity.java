@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import static android.projekat.MainActivity.userDbHelper;
+
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
     public EditText firstName;
     public EditText lastName;
@@ -14,6 +16,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public EditText username;
     public EditText password;
     public Toast toast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             toast = Toast.makeText(this, "Email is required.", Toast.LENGTH_SHORT);
             toast.show();
         }
+        else  if (userDbHelper.readUserByEmail(email.getText().toString())!= null)
+        {
+            toast = Toast.makeText(this, "Email must be unique.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
         else  if (!email.getText().toString().contains("@"))
         {
             toast = Toast.makeText(this, "Invalid email.", Toast.LENGTH_SHORT);
@@ -53,6 +61,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         else if (username.getText().toString().isEmpty())
         {
             toast = Toast.makeText(this, "Username is required.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else  if (userDbHelper.isUserNameUnique(email.getText().toString())!= null)
+        {
+            toast = Toast.makeText(this, "Username must be unique.", Toast.LENGTH_SHORT);
             toast.show();
         }
         else if (password.getText().toString().isEmpty())
@@ -67,6 +80,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
         else
         {
+            User u = new User(firstName.getText().toString(), lastName.getText().toString(),
+                    username.getText().toString(), email.getText().toString());
+            userDbHelper.insert(u);
             Intent intent = new Intent(this, AdListActivity.class);
             startActivity(intent);
         }

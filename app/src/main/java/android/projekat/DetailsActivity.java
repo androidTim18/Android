@@ -2,13 +2,16 @@ package android.projekat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,12 +24,15 @@ import android.widget.TextView;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 import static android.projekat.ListAll.adDbHelper;
+import static android.projekat.MainActivity.userDbHelper;
 
-public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class DetailsActivity extends AppCompatActivity implements View.OnClickListener,
+        AdapterView.OnItemLongClickListener {
     public Intent i;
     TextView name;
     TextView breed;
@@ -49,9 +55,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     ListView commentList;
     EditText commentInput;
     Button addComment;
-    ArrayList<Comment> commentArray;
+    CommentDbHelper commentDbHelper;
     CommentAdapter commentAdapter;
-    ArrayList<Comment> newComments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +67,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         favorite.setOnClickListener(this);
         buy = findViewById(R.id.bBuy);
         buy.setOnClickListener(this);
+
         commentList = findViewById(R.id.commentList);
         commentInput = findViewById(R.id.commentInput);
         addComment = findViewById(R.id.add_comment);
         addComment.setOnClickListener(this);
+        commentList.setOnItemLongClickListener(this);
 
+        commentDbHelper = new CommentDbHelper(this);
+        commentAdapter = new CommentAdapter(this);
         i = getIntent();
 
         name = findViewById(R.id.d_name);
@@ -95,12 +104,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         photo.setImageDrawable(ad.photo);
         dateAdded.setText(ad.dateAdded);
 
-        commentArray = new ArrayList<Comment>();
-        commentAdapter = new CommentAdapter(this, commentArray);
+
+        Comment[] allComments = commentDbHelper.readComments(ad.adId);
+        commentAdapter.update(allComments);
         commentList.setAdapter(commentAdapter);
 
-        newComments = ad.comments;
-        commentAdapter.addAll(newComments);
 
         if (ad.favorite){
             favorite.setTag(1);
@@ -111,6 +119,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         if (ad.available){
             buy.setTag(1);
+
         }
         else {
             buy.setTag(0);
@@ -165,11 +174,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 });
                 break;
             case R.id.add_comment:
+                Date c = Calendar.getInstance().getTime();
+                SimpleDateFormat df = new SimpleDateFormat();
                 Comment comment = new Comment(owner.getText() + ": " + commentInput.getText(),
-                        new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date()));
-                ad.addComment(comment);
-                newComments= ad.comments;
-                commentAdapter.addAll(newComments);
+                        df.format(c), ad.adId);
+                commentInput.setText("");
+                commentDbHelper.insert(comment);
+                commentAdapter.update(commentDbHelper.readComments(ad.adId));
+                commentList.setAdapter(commentAdapter);
+                break;
         }
     }
     private void checkTags(){
@@ -179,13 +192,25 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         else{
             favorite.setText("Dodaj u omiljeno");
         }
-        if (buy.getTag().equals(1)){
+/*        if (buy.getTag().equals(1)){
             buy.setText("kupi");
             buy.setEnabled(true);
         }
         else{
             buy.setText("prodato");
             buy.setEnabled(false);
+        }*/
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+
+        if (userDbHelper.isAdmin(((SharedPreferences) preferences).getString("user", null))) {
+            Comment c = (Comment)parent.getItemAtPosition(position);
+            commentDbHelper.deleteComment(c.getCommentId());
+            commentAdapter.update(commentDbHelper.readComments(ad.adId));
         }
+        return false;
     }
 }

@@ -13,9 +13,10 @@
             android:icon="@drawable/add"
             android:title="Dodaj oglas" />
         <item
-            android:id="@+id/nav_rate"
+            android:id="@+id/nav_rating"
             android:icon="@drawable/star"
-            android:title="Oceni aplikaciju" />
+            android:title="Prosečna ocena: " />
+
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"

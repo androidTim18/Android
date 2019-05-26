@@ -1,5 +1,7 @@
 package android.projekat;
 
+import android.content.ClipData;
+import android.content.ClipData.Item;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -26,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import static android.projekat.MainActivity.userDbHelper;
+
 public class AdListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -44,7 +48,7 @@ public class AdListActivity extends AppCompatActivity
      */
     private ViewPager mViewPager;
     Intent i;
-
+    DrawerLayout drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +57,7 @@ public class AdListActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -100,7 +104,18 @@ public class AdListActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        User[] users = userDbHelper.readRatings();
+        Double average = 0.0;
+        if (users == null) {
+            Double sum = 0.0;
+            for (int i = 0; i < users.length; i++) {
+                sum += users[i].rating;
+            }
+            average = sum / users.length;
+        }
         getMenuInflater().inflate(R.menu.navigation_drawer, menu);
+        MenuItem item = findViewById(R.id.nav_rating);
+        item.setTitle(item.getTitle()+ average.toString());
         return true;
     }
 
@@ -125,12 +140,16 @@ public class AdListActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         switch(item.getItemId()){
             case R.id.nav_settings:
-                break;
-            case R.id.nav_add:
-                Intent i = new Intent(getApplicationContext(), AddActivity.class);
+                i = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(i);
                 break;
-            case R.id.nav_rate:
+            case R.id.nav_add:
+                i = new Intent(getApplicationContext(), AddActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_rating:
+                i = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(i);
                 break;
             case R.id.nav_logout:
                 //TODO: Logout properly
@@ -140,7 +159,7 @@ public class AdListActivity extends AppCompatActivity
         };
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

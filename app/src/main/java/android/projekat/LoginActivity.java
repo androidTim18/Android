@@ -1,12 +1,14 @@
 package android.projekat;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.content.SharedPreferences;
+
+import static android.projekat.MainActivity.userDbHelper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -34,6 +36,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             toast = Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT);
             toast.show();
         }
+        else if (userDbHelper.readUserByEmail(email.getText().toString())== null)
+        {
+            toast = Toast.makeText(this, "User not registered.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
         else if (password.getText().toString().isEmpty())
         {
             toast = Toast.makeText(this, "Invalid password", Toast.LENGTH_SHORT);
@@ -42,9 +49,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         else
         {
             //TODO: If Http response ok, change email tousername, block anyone from reg as admin
+            User user = userDbHelper.readUserByEmail(email.getText().toString());
             SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
-            ((SharedPreferences.Editor) editor).putString("user", email.getText().toString());
+            ((SharedPreferences.Editor) editor).putString("userFullName", user.getFullName());
+            ((SharedPreferences.Editor) editor).putString("userId", user.getUserId());
             ((SharedPreferences.Editor) editor).apply();
+
             Intent intent = new Intent(this, AdListActivity.class);
             startActivity(intent);
         }
