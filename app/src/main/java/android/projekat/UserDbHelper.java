@@ -50,7 +50,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
 
     public void insert(User user) {
-        SQLiteDatabase commentsDb = getWritableDatabase();
+        SQLiteDatabase userDb = getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID, user.getUserId());
@@ -86,7 +86,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void rate(User user, Integer d){
+    public void rate(User user, float d){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID, user.getUserId());
@@ -103,7 +103,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
     private User createUser(Cursor cursor) {
         String id = cursor.getString(cursor.getColumnIndex(COLUMN_USER_ID));
-        Double rating = cursor.getDouble(cursor.getColumnIndex(COLUMN_RATING));
+        Float rating = cursor.getFloat(cursor.getColumnIndex(COLUMN_RATING));
         String rated = cursor.getString(cursor.getColumnIndex(COLUMN_RATED));
         String userName = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
         String firstName = cursor.getString(cursor.getColumnIndex(COLUMN_FIRST_NAME));
@@ -117,7 +117,8 @@ public class UserDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase userDb = getReadableDatabase();
         Cursor cursor = userDb.query(TABLE_NAME, null, COLUMN_EMAIL + "=?",
                 new String[] {index}, null, null, null);
-        if (cursor.getString(cursor.getColumnIndex(COLUMN_USER_ID))==null){
+
+        if (cursor.getCount() <= 0) {
             return null;
         }
 
@@ -134,6 +135,9 @@ public class UserDbHelper extends SQLiteOpenHelper {
         Cursor cursor = userDb.query(TABLE_NAME, null, COLUMN_USER_ID + "=?",
                 new String[] {index}, null, null, null);
 
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
         cursor.moveToFirst();
         User user = createUser(cursor);
 
@@ -145,7 +149,8 @@ public class UserDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase userDb = getReadableDatabase();
         Cursor cursor = userDb.query(TABLE_NAME, null, COLUMN_USERNAME + "=?",
                 new String[] {index}, null, null, null);
-        if (cursor.getString(cursor.getColumnIndex(COLUMN_USER_ID))==null){
+
+        if (cursor.getCount() <= 0) {
             return null;
         }
 
@@ -160,8 +165,9 @@ public class UserDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase userDb = getReadableDatabase();
         Cursor cursor = userDb.query(TABLE_NAME, null, COLUMN_USER_ID + "=?",
                 new String[] {index}, null, null, null);
-        if (cursor.getString(cursor.getColumnIndex(COLUMN_USER_ID))==null){
-            return null;
+
+        if (cursor.getCount() <= 0) {
+            return false;
         }
 
         cursor.moveToFirst();

@@ -17,10 +17,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bJoin).setOnClickListener(this);
 
         userDbHelper = new UserDbHelper(this);
+
         User admin = new User("Admin", "", "Administrator", "@admin");
         if (userDbHelper.readUserByEmail(admin.email) == null){
+            admin.setUserId("administrator");
             userDbHelper.insert(admin);
-        };
+        }
 
     }
 

@@ -2,5 +2,17 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FCFC35</color>
+    
+    <color name="Green">#008577</color>
+    <color name="DarkGreen">#00574B</color>
+    <color name="LightGreen">#C9FFF9</color>
+
+    <color name="Yellow">#EEAA00</color>
+    <color name="DarkYellow">#FCFC35</color>
+    <color name="LightYellow">#FFFFD6</color>
+
+    <color name="NavyBlue">#02287A</color>
+    <color name="DarkNavy">#01133A</color>
+    <color name="LightNavy">#CBD7F2</color>
 </resources>

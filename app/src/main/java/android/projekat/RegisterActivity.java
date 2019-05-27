@@ -1,6 +1,7 @@
 package android.projekat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -82,6 +83,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         {
             User u = new User(firstName.getText().toString(), lastName.getText().toString(),
                     username.getText().toString(), email.getText().toString());
+            SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
+            ((SharedPreferences.Editor) editor).putString("userFullName", u.getFullName());
+            ((SharedPreferences.Editor) editor).putString("userId", u.getUserId());
+            ((SharedPreferences.Editor) editor).apply();
             userDbHelper.insert(u);
             Intent intent = new Intent(this, AdListActivity.class);
             startActivity(intent);

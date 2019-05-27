@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
@@ -57,8 +58,8 @@ public class AdDbHelper extends SQLiteOpenHelper {
                 COLUMN_OWNER + " TEXT, " +
                 COLUMN_INFO + " TEXT, " +
                 COLUMN_PRICE + " TEXT, " +
-                COLUMN_AVAILABLE + " TEXT, " +
-                COLUMN_FAVORITE + " TEXT, " +
+                COLUMN_AVAILABLE + " INTEGER, " +
+                COLUMN_FAVORITE + " INTEGER, " +
                 COLUMN_DATE_ADDED + " TEXT, " +
                 COLUMN_PHOTO + " BLOB);"
         );
@@ -84,8 +85,8 @@ public class AdDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_OWNER, ad.getOwner());
         values.put(COLUMN_INFO, ad.getInfo());
         values.put(COLUMN_PRICE, ad.getPrice());
-        values.put(COLUMN_AVAILABLE, ad.isAvailable());
-        values.put(COLUMN_FAVORITE, ad.isFavorite());
+        values.put(COLUMN_AVAILABLE, 1);
+        values.put(COLUMN_FAVORITE, 0);
         values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
 
         Drawable d = ad.photo;
@@ -119,8 +120,9 @@ public class AdDbHelper extends SQLiteOpenHelper {
     }
     public Ad[] readFavorites() {
         SQLiteDatabase adDb = getReadableDatabase();
+        Integer index =1;
         Cursor cursor = adDb.query(TABLE_NAME, null, COLUMN_FAVORITE + "=?",
-                new String[]{"true"}, null, null, null, null);
+                new String[]{index.toString()}, null, null, null, null);
 
         if (cursor.getCount() <= 0) {
             return null;
@@ -206,7 +208,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_INFO, ad.getInfo());
         values.put(COLUMN_PRICE, ad.getPrice());
         values.put(COLUMN_AVAILABLE, ad.isAvailable());
-        values.put(COLUMN_FAVORITE, "true");
+        values.put(COLUMN_FAVORITE, 1);
         values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
 
         Drawable d = ad.photo;
@@ -232,7 +234,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_INFO, ad.getInfo());
         values.put(COLUMN_PRICE, ad.getPrice());
         values.put(COLUMN_AVAILABLE, ad.isAvailable());
-        values.put(COLUMN_FAVORITE, "false");
+        values.put(COLUMN_FAVORITE, 0);
         values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
 
         Drawable d = ad.photo;
@@ -257,7 +259,7 @@ public class AdDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_OWNER, ad.getOwner());
         values.put(COLUMN_INFO, ad.getInfo());
         values.put(COLUMN_PRICE, ad.getPrice());
-        values.put(COLUMN_AVAILABLE, "false");
+        values.put(COLUMN_AVAILABLE, 0);
         values.put(COLUMN_FAVORITE, ad.isAvailable());
         values.put(COLUMN_DATE_ADDED, ad.getDateAdded());
 
@@ -283,8 +285,9 @@ public class AdDbHelper extends SQLiteOpenHelper {
         String info = cursor.getString(cursor.getColumnIndex(COLUMN_INFO));
         String price = cursor.getString(cursor.getColumnIndex(COLUMN_PRICE));
         String dateAdded = cursor.getString(cursor.getColumnIndex(COLUMN_DATE_ADDED));
-        Boolean available = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_AVAILABLE)));
-        Boolean favorite = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_FAVORITE)));
+        Integer available = cursor.getInt(cursor.getColumnIndex(COLUMN_AVAILABLE));
+
+        Integer favorite = cursor.getInt(cursor.getColumnIndex(COLUMN_FAVORITE));
         byte[] photo = cursor.getBlob(cursor.getColumnIndex(COLUMN_PHOTO));
 
         return new Ad(species, breed, name, birthday, sex, location, owner,
