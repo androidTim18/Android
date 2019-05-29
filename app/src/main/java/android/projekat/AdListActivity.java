@@ -3,7 +3,6 @@ package android.projekat;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +19,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,8 +27,6 @@ import android.view.ViewGroup;
 
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.text.DecimalFormat;
 
 import static android.projekat.MainActivity.userDbHelper;
 
@@ -53,7 +49,6 @@ public class AdListActivity extends AppCompatActivity
     private ViewPager mViewPager;
     Intent i;
     DrawerLayout drawer;
-    NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +63,8 @@ public class AdListActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        navigationView.getMenu().getItem(0).setChecked(false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -111,28 +104,18 @@ public class AdListActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        Menu m = navigationView.getMenu();
-        MenuItem ratng_display = m.findItem(R.id.nav_rating);
-
-
         User[] users = userDbHelper.readRatings();
         Double average = 0.0;
-        if (users != null) {
+        if (users == null) {
             Double sum = 0.0;
             for (int i = 0; i < users.length; i++) {
                 sum += users[i].rating;
-                Log.i("Ocene", users[i].rating.toString());
             }
             average = sum / users.length;
-            Log.i("suma", sum.toString());
         }
-        DecimalFormat formatNum = new DecimalFormat("#.#");
-
-        ratng_display.setTitle(ratng_display.getTitle()+ formatNum.format(average));
-        Log.i("RATING", average.toString());
-
         getMenuInflater().inflate(R.menu.navigation_drawer, menu);
-
+        MenuItem item = findViewById(R.id.nav_rating);
+        item.setTitle(item.getTitle()+ average.toString());
         return true;
     }
 
@@ -147,9 +130,7 @@ public class AdListActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-        if (id == R.id.nav_menu_icon) {
-            return true;
-        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -172,9 +153,6 @@ public class AdListActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 //TODO: Logout properly
-                SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
-                ((SharedPreferences.Editor) editor).remove("userFullName");
-                ((SharedPreferences.Editor) editor).remove("userId");
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 break;

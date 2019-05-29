@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -58,8 +57,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     public Drawable drawable;
     protected int isImgAdded;
     String cityname;
-    TextView location;
-    EditText inputLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +65,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
         findViewById(R.id.bAddAd).setOnClickListener(this);
         findViewById(R.id.bAddImg).setOnClickListener(this);
-        findViewById(R.id.bAddCurrentLoc).setOnClickListener(this);
-        findViewById(R.id.bAddLocationManual).setOnClickListener(this);
-        inputLocation = findViewById(R.id.inputLocation);
         isImgAdded = 0;
-        location = findViewById(R.id.add_location);
-        location.setText("");
-
     }
 
     @Override
@@ -86,21 +77,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
-                break;
-
-            case R.id.bAddLocationManual:
-                if(inputLocation.getText().toString() != "") {
-                    location.setText(inputLocation.getText());
-                }
-                else{
-
-                    toast = Toast.makeText(this, "Unesite lokaciju.", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                break;
-
-            case R.id.bAddCurrentLoc:
-                location.setText(getCurrentCity());
                 break;
 
             case R.id.bAddAd:
@@ -115,7 +91,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 spinner = findViewById(R.id.spinner);
                 photo = findViewById(R.id.add_img);
                 info = findViewById(R.id.add_info);
-                location = findViewById(R.id.add_location);
 
                 if (species.getText().toString().isEmpty()) {
                     toast = Toast.makeText(this, "Species is required.", Toast.LENGTH_SHORT);
@@ -142,14 +117,12 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                     image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] imageInByte = stream.toByteArray();
 
-                    //TODO:send all info to server
-
-                    Ad newAd = new Ad(species.getText().toString().toLowerCase(),
-                            breed.getText().toString().toLowerCase(), name.getText().toString(),
-                            date.getText().toString(), sex.getText().toString(),
-                            location.getText().toString(), user.getFullName(), info.getText().toString(),
-                            (price.getText().toString() + spinner.getSelectedItem().toString()),
-                            1, 0, imageInByte);
+                    //TODO: get location, send all info to server
+                    getCurrentCity();
+                    Ad newAd = new Ad(species.getText().toString(), breed.getText().toString(), name.getText().toString(),
+                            date.getText().toString(), sex.getText().toString(), "Novi Sad", user.getFullName(),
+                            info.getText().toString(), (price.getText().toString() + spinner.getSelectedItem().toString()),
+                            true, false, imageInByte);
                     adDbHelper.insert(newAd);
                     toast = Toast.makeText(this, "Uspešno ste dodali oglas!", Toast.LENGTH_SHORT);
                     toast.show();
@@ -190,7 +163,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         locationManager.getBestProvider(criteria, true);
         List<Address> addresses;
         cityname = new String();
-        cityname = "Nepoznata lokacija";
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED &&
@@ -207,15 +179,12 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             }
             else{
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-                toast = Toast.makeText(this, "Neuspešno lociranje.", Toast.LENGTH_SHORT);
-                toast.show();
             }
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        Log.i("Location", cityname);
+        Log.i("LOCATION", cityname);
         return cityname;
     }
 }

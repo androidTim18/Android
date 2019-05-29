@@ -47,12 +47,12 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (rbBreed.isChecked()){
-                    Ad[] ads = adDbHelper.searchBreed(s.toString().toLowerCase());
+                    Ad[] ads = adDbHelper.searchBreed(s.toString());
                     adapter.update(ads);
                 }
                 else if (rbSpecies.isChecked())
                 {
-                    Ad[] ads = adDbHelper.searchSpecies(s.toString().toLowerCase());
+                    Ad[] ads = adDbHelper.searchSpecies(s.toString());
                     adapter.update(ads);
                 }
             }

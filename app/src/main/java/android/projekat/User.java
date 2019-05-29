@@ -4,7 +4,7 @@ import java.util.Random;
 
 class User {
     public String userId;
-    public Float rating;
+    public Double rating;
     public String rated;
     public String userName;
     public String firstName;
@@ -12,7 +12,7 @@ class User {
     public String email;
     public String fullName;
 
-    public User(String userId, Float rating, String rated, String firstName, String lastName, String userName, String email) {
+    public User(String userId, Double rating, String rated, String firstName, String lastName, String userName, String email) {
         this.userId = userId;
         this.rating = rating;
         this.rated = rated;
@@ -24,7 +24,7 @@ class User {
     }
     public User(String firstName, String lastName, String userName, String email) {
 
-        this.rating = 0.0f;
+        this.rating = 0.0;
         this.rated = "false";
         this.userName = userName;
 
@@ -54,11 +54,11 @@ class User {
         this.userId = userId;
     }
 
-    public float getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Float rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 

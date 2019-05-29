@@ -13,9 +13,8 @@ import static android.projekat.MainActivity.userDbHelper;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener{
 
-    RadioButton rbGreen;
-    RadioButton rbYellow;
-    RadioButton rbDark;
+    RadioButton rbSettingsOrig;
+    RadioButton rbSettingsDark;
     RatingBar ratingBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +22,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_settings);
 
         Button button = findViewById(R.id.bSave);
-        rbGreen = findViewById(R.id.rbGreen);
-        rbYellow = findViewById(R.id.rbYellow);
-        rbDark = findViewById(R.id.rbDark);
+        rbSettingsOrig = findViewById(R.id.rbSettingsOrig);
+        rbSettingsDark = findViewById(R.id.rbSettingsDark);
         ratingBar = findViewById(R.id.ratingBar);
         button.setOnClickListener(this);
-
-        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
-        User user = userDbHelper.readUserById(((SharedPreferences) preferences).getString("userId", null));
-
-        if(user.rated != null){
-            ratingBar.setRating(user.getRating());
-        }
 
     }
 
@@ -45,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                 SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
                 String id = ((SharedPreferences) preferences).getString("userId", null);
-                userDbHelper.rate(userDbHelper.readUserById(id), ratingBar.getRating());
+                userDbHelper.rate(userDbHelper.readUserById(id), ratingBar.getNumStars());
                 Intent i = new Intent(this, AdListActivity.class);
                 startActivity(i);
                 break;

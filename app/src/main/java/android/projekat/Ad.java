@@ -3,7 +3,6 @@ package android.projekat;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,24 +21,22 @@ public class Ad {
     public String owner;
     public String info;
     public String price;
-    public Integer available;
-    public Integer favorite;
+    public boolean available;
+    public boolean favorite;
     public Drawable photo;
     public ArrayList<Comment> comments;
 
 //new Ad - fisrt time adding
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, int available, int favorite,
+              String info, String price, boolean available, boolean favorite,
               byte[] imageInByte) {
         Random r = new Random();
 
         Integer a = (r.nextInt((9999-1000)+1)+1000);
 
         this.adId = a.toString();
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy.");
-        this.dateAdded = df.format(c);
+        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
         this.species = species;
         this.breed = breed;
         this.name = name;
@@ -52,21 +49,19 @@ public class Ad {
         this.owner = owner;
         this.info = info;
         this.price = price;
-        this.available = 1;
-        this.favorite = 0;
+        this.available = true;
+        this.favorite = false;
     }
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, int available, int favorite,
+              String info, String price, boolean available, boolean favorite,
               Drawable drw) {
         Random r = new Random();
 
         Integer a = (r.nextInt((9999 - 1000) + 1) + 1000);
 
         this.adId = a.toString();
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy.");
-        this.dateAdded = df.format(c);
+        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
         this.species = species;
         this.breed = breed;
         this.name = name;
@@ -83,7 +78,7 @@ public class Ad {
     //Constructor with all param - imageInBytes
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, int available, int favorite,
+              String info, String price, boolean available, boolean favorite,
               byte[] imageInByte, String adId, String dateAdded) {
 
         this.adId = adId;
@@ -106,7 +101,7 @@ public class Ad {
     //Constructor with all param - drawable photo
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, int available, int favorite,
+              String info, String price, boolean available, boolean favorite,
               Drawable drw, String adId, String dateAdded) {
 
         this.adId = adId;
@@ -219,19 +214,19 @@ public class Ad {
         this.price = price;
     }
 
-    public int isAvailable() {
+    public boolean isAvailable() {
         return available;
     }
 
-    public void setAvailable(int available) {
+    public void setAvailable(boolean available) {
         this.available = available;
     }
 
-    public int isFavorite() {
+    public boolean isFavorite() {
         return favorite;
     }
 
-    public void setFavorite(int favorite) {
+    public void setFavorite(boolean favorite) {
         this.favorite = favorite;
     }
 

@@ -190,8 +190,8 @@
         <ListView
             android:id="@+id/commentList"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:background="@color/colorPrimary"
+            android:layout_height="200dp"
+            android:background="#bfefef"
             android:scrollbarSize="14dp"
             android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical">

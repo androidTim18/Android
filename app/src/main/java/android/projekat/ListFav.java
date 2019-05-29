@@ -44,6 +44,19 @@ public class ListFav extends Fragment implements AdapterView.OnItemClickListener
 
         Intent intent = new Intent(getActivity(), DetailsActivity.class);
         Ad ad = (Ad) parent.getItemAtPosition(position);
+        /*
+        intent.putExtra("species", ad.species);
+        intent.putExtra("breed", ad.breed);
+        intent.putExtra("name", ad.name);
+        intent.putExtra("birthday", ad.birthday);
+        intent.putExtra("sex", ad.sex);
+        intent.putExtra("price",ad.price);
+        intent.putExtra("available", ad.available);
+        intent.putExtra("info", ad.info);
+        intent.putExtra("dateAdded", ad.dateAdded);
+        intent.putExtra("favorite", ad.favorite);
+        intent.putExtra("owner", ad.owner);
+        intent.putExtra("location", ad.location);*/
 
         intent.putExtra("adId", ad.getAdId());
         startActivity(intent);
@@ -53,8 +66,9 @@ public class ListFav extends Fragment implements AdapterView.OnItemClickListener
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
         SharedPreferences preferences = this.getActivity().getSharedPreferences("preferences", MODE_PRIVATE);
-
-        if (((SharedPreferences) preferences).getString("userId", null) == "administrator") {
+        String user = new String();
+        user = ((SharedPreferences) preferences).getString("user", null);
+        if (user.equals("administrator")) {
             Ad ad = (Ad) parent.getItemAtPosition(position);
             adDbHelper.deleteAd(ad.adId);
         }
