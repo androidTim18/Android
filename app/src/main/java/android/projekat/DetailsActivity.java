@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
@@ -45,7 +47,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     TextView price;
     ImageView photo;
     TextView dateAdded;
-    Ad ad = new Ad();
+    Ad ad;
     Button buy;
     Button favorite;
     Button bConfirm;
@@ -57,9 +59,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     Button addComment;
     CommentDbHelper commentDbHelper;
     CommentAdapter commentAdapter;
+    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
@@ -108,32 +113,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         Comment[] allComments = commentDbHelper.readComments(ad.adId);
         commentAdapter.update(allComments);
         commentList.setAdapter(commentAdapter);
-
-
-        if (ad.favorite){
-            favorite.setTag(1);
-        }
-        else {
-            favorite.setTag(0);
-        }
-
-        if (ad.available){
-            buy.setTag(1);
-
-        }
-        else {
-            buy.setTag(0);
-        }
-        checkTags();
-
-
+        check();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bFavorite:
-                if(!ad.favorite){
+                if(ad.favorite == 0){
                     adDbHelper.makeAdFavorite(ad);
                     favorite.setTag(1);
                 }
@@ -141,7 +128,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     adDbHelper.removeAdFavorite(ad);
                     favorite.setTag(0);
                 }
-                checkTags();
+                check();
                 break;
             case R.id.bBuy:
                 LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -167,15 +154,21 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     public void onClick(View v) {
 
                         adDbHelper.makeAdUnavailable(ad);
-                        buy.setTag(0);
-                        checkTags();
                         popupWindow.dismiss();
+                        check();
+                        Intent intent = new Intent(v.getContext(), AdListActivity.class);
+
+                        toast = Toast.makeText(v.getContext(),
+                                "Uspešna kupovina! Uskoro ćete biti kontaktirani. Hvala.", Toast.LENGTH_SHORT);
+                        toast.show();
+                        startActivity(intent);
+
                     }
                 });
                 break;
             case R.id.add_comment:
                 Date c = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat();
+                SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy. hh:mm");
                 Comment comment = new Comment(owner.getText() + ": " + commentInput.getText(),
                         df.format(c), ad.adId);
                 commentInput.setText("");
@@ -185,28 +178,31 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
         }
     }
-    private void checkTags(){
-        if(favorite.getTag().equals(1)){
+
+    protected void check(){
+        if (ad.favorite == 1){
             favorite.setText("obriši iz omiljenih");
         }
         else{
             favorite.setText("Dodaj u omiljeno");
-        }
-/*        if (buy.getTag().equals(1)){
+            super.onRestart();        }
+
+        if (ad.available == 1){
             buy.setText("kupi");
             buy.setEnabled(true);
         }
-        else{
+        else {
             buy.setText("prodato");
             buy.setEnabled(false);
-        }*/
+        }
+
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
 
-        if (userDbHelper.isAdmin(((SharedPreferences) preferences).getString("user", null))) {
+        if (((SharedPreferences) preferences).getString("userId", null).equals("administrator")) {
             Comment c = (Comment)parent.getItemAtPosition(position);
             commentDbHelper.deleteComment(c.getCommentId());
             commentAdapter.update(commentDbHelper.readComments(ad.adId));

@@ -24,7 +24,7 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.search, container, false);
+        View rootView = inflater.inflate(R.layout.search, container, false);
 
         ListView listSearch = rootView.findViewById(R.id.listSearch);
         EditText searchFilter = rootView.findViewById(R.id.searchFilter);
@@ -47,12 +47,12 @@ public class Search extends Fragment implements AdapterView.OnItemClickListener,
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (rbBreed.isChecked()){
-                    Ad[] ads = adDbHelper.searchBreed(s.toString());
+                    Ad[] ads = adDbHelper.searchBreed(s.toString().toLowerCase());
                     adapter.update(ads);
                 }
                 else if (rbSpecies.isChecked())
                 {
-                    Ad[] ads = adDbHelper.searchSpecies(s.toString());
+                    Ad[] ads = adDbHelper.searchSpecies(s.toString().toLowerCase());
                     adapter.update(ads);
                 }
             }

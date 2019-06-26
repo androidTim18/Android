@@ -3,6 +3,7 @@ package android.projekat;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -19,14 +20,26 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Iterator;
 
 import static android.projekat.MainActivity.userDbHelper;
 
@@ -49,11 +62,28 @@ public class AdListActivity extends AppCompatActivity
     private ViewPager mViewPager;
     Intent i;
     DrawerLayout drawer;
+    NavigationView navigationView;
+    ImageView nav_menu_icon;
+    Toast toast;
+
+    HttpHelper httpHelper;
+    static String BASE_URL = "localhost:8000";
+    String GET_ALL_ADS = BASE_URL + "/ads";
+    int isRefreshed;
+    Ad[] adsRefreshed;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ad_list);
 
+        nav_menu_icon = findViewById(R.id.nav_menu_icon);
+        nav_menu_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,8 +93,10 @@ public class AdListActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView.getMenu().getItem(0).setChecked(false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -88,7 +120,7 @@ public class AdListActivity extends AppCompatActivity
             }
         });
 
-
+        httpHelper = new HttpHelper();
     }
     @Override
     public void onBackPressed() {
@@ -96,6 +128,9 @@ public class AdListActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
+            ((SharedPreferences.Editor) editor).remove("userFullName");
+            ((SharedPreferences.Editor) editor).remove("userId");
             super.onBackPressed();
         }
     }
@@ -104,18 +139,28 @@ public class AdListActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        Menu m = navigationView.getMenu();
+        MenuItem rating_display = m.findItem(R.id.nav_rating);
+
+
         User[] users = userDbHelper.readRatings();
         Double average = 0.0;
-        if (users == null) {
+        if (users != null) {
             Double sum = 0.0;
             for (int i = 0; i < users.length; i++) {
                 sum += users[i].rating;
+                Log.i("Ocene", users[i].rating.toString());
             }
             average = sum / users.length;
+            Log.i("suma", sum.toString());
         }
+        DecimalFormat formatNum = new DecimalFormat("#.#");
+
+        rating_display.setTitle(rating_display.getTitle()+ formatNum.format(average));
+        Log.i("RATING", average.toString());
+        MenuItem dispAverage = findViewById(R.id.nav_rating);
         getMenuInflater().inflate(R.menu.navigation_drawer, menu);
-        MenuItem item = findViewById(R.id.nav_rating);
-        item.setTitle(item.getTitle()+ average.toString());
+
         return true;
     }
 
@@ -130,7 +175,9 @@ public class AdListActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
+        if (id == R.id.nav_menu_icon) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -153,8 +200,29 @@ public class AdListActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 //TODO: Logout properly
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
+                SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
+                ((SharedPreferences.Editor) editor).remove("userFullName");
+                ((SharedPreferences.Editor) editor).remove("userId");
+                i = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_info:
+                i = new Intent(getApplicationContext(), InfoActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_refresh:
+                toast = Toast.makeText(this, "Refreshing...", Toast.LENGTH_SHORT);
+                toast.show();
+
+                if (refreshData()){
+
+                    ListAll.adapter.update(adsRefreshed);
+                }
+                else{
+                    Toast.makeText(AdListActivity.this, "Can not refresh right now.", Toast.LENGTH_LONG).show();
+                };
+
                 break;
         };
 
@@ -195,4 +263,65 @@ public class AdListActivity extends AppCompatActivity
             return 3;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences.Editor editor = getSharedPreferences("preferences", MODE_PRIVATE).edit();
+        ((SharedPreferences.Editor) editor).remove("userFullName");
+        ((SharedPreferences.Editor) editor).remove("userId");
+        super.onDestroy();
+    }
+
+
+    public boolean refreshData(){
+        isRefreshed = 0;
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    JSONArray jsonArray = httpHelper.getJSONArrayFromURL(GET_ALL_ADS);
+                    if (jsonArray == null) {
+                        isRefreshed = 0;
+
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            adsRefreshed= new Ad[jsonArray.length()];
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            Ad newAd = new Ad(jsonObject.getString("species").toLowerCase(),
+                                    jsonObject.getString("breed").toLowerCase(),
+                                    jsonObject.getString("name"),
+                                    jsonObject.getString("birthday"),
+                                    jsonObject.getString("sex"),
+                                    jsonObject.getString("location"),
+                                    jsonObject.getString("owner"),
+                                    jsonObject.getString("info"),
+                                    jsonObject.getString("price"),
+                                    jsonObject.getInt("available"),
+                                    jsonObject.getInt("favorite"),
+                                    jsonObject.getString("image").getBytes(),
+                                    jsonObject.getString("adId"),
+                                    jsonObject.getString("dateAdded"));
+
+                                adsRefreshed[i] = newAd;
+                        }
+                        isRefreshed = 1;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+                }).start();
+        if(isRefreshed == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    };
 }
+
+
+
+

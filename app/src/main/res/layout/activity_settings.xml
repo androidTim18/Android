@@ -24,15 +24,18 @@
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Originalna tema"
-            android:id="@+id/rbSettingsOrig"
-            android:checked="true"/>
+            android:text="GreenTheme"
+            android:id="@+id/rbGreen"/>
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tamna tema"
-            android:id="@+id/rbSettingsDark"/>
-
+            android:text="YellowTheme"
+            android:id="@+id/rbYellow"/>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DarkTheme"
+            android:id="@+id/rbDark"/>
     </RadioGroup>
     <TextView
         android:layout_width="match_parent"

@@ -13,15 +13,18 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -36,8 +39,13 @@ import java.util.Locale;
 
 import android.graphics.BitmapFactory;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 
+import static android.projekat.AdListActivity.BASE_URL;
 import static android.projekat.ListAll.adDbHelper;
 import static android.projekat.MainActivity.userDbHelper;
 
@@ -56,7 +64,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     public Toast toast;
     public Drawable drawable;
     protected int isImgAdded;
-    String cityname;
+    public String cityname;
+    public TextView location;
+    public EditText inputLocation;
+    public HttpHelper httpHelper;
+    public Ad newAd;
+    public Handler handler;
+
+    String POST_NEW_AD = BASE_URL + "/newad";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +80,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
         findViewById(R.id.bAddAd).setOnClickListener(this);
         findViewById(R.id.bAddImg).setOnClickListener(this);
+        findViewById(R.id.bAddCurrentLoc).setOnClickListener(this);
+        findViewById(R.id.bAddLocationManual).setOnClickListener(this);
+        inputLocation = findViewById(R.id.inputLocation);
         isImgAdded = 0;
+        location = findViewById(R.id.add_location);
+        location.setText("");
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
@@ -77,6 +99,21 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+                break;
+
+            case R.id.bAddLocationManual:
+                if(inputLocation.getText().toString() != "") {
+                    location.setText(inputLocation.getText());
+                }
+                else{
+
+                    toast = Toast.makeText(this, "Unesite lokaciju.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                break;
+
+            case R.id.bAddCurrentLoc:
+                location.setText(getCurrentCity());
                 break;
 
             case R.id.bAddAd:
@@ -91,6 +128,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 spinner = findViewById(R.id.spinner);
                 photo = findViewById(R.id.add_img);
                 info = findViewById(R.id.add_info);
+                location = findViewById(R.id.add_location);
 
                 if (species.getText().toString().isEmpty()) {
                     toast = Toast.makeText(this, "Species is required.", Toast.LENGTH_SHORT);
@@ -117,14 +155,17 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                     image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] imageInByte = stream.toByteArray();
 
-                    //TODO: get location, send all info to server
-                    getCurrentCity();
-                    Ad newAd = new Ad(species.getText().toString(), breed.getText().toString(), name.getText().toString(),
-                            date.getText().toString(), sex.getText().toString(), "Novi Sad", user.getFullName(),
-                            info.getText().toString(), (price.getText().toString() + spinner.getSelectedItem().toString()),
-                            true, false, imageInByte);
+                    //TODO:send all info to server
+
+                    newAd = new Ad(species.getText().toString().toLowerCase(),
+                            breed.getText().toString().toLowerCase(), name.getText().toString(),
+                            date.getText().toString(), sex.getText().toString(),
+                            location.getText().toString(), user.getFullName(), info.getText().toString(),
+                            (price.getText().toString() + spinner.getSelectedItem().toString()),
+                            1, 0, imageInByte);
                     adDbHelper.insert(newAd);
-                    toast = Toast.makeText(this, "Uspešno ste dodali oglas!", Toast.LENGTH_SHORT);
+                    uploadNewAd();
+                    toast = Toast.makeText(this, "Uspešno ste dodali oglas u lokalnu bazu!", Toast.LENGTH_SHORT);
                     toast.show();
                     startActivity(intent);
                 }
@@ -163,6 +204,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         locationManager.getBestProvider(criteria, true);
         List<Address> addresses;
         cityname = new String();
+        cityname = "Nepoznata lokacija";
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED &&
@@ -179,12 +221,68 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             }
             else{
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                toast = Toast.makeText(this, "Neuspešno lociranje.", Toast.LENGTH_SHORT);
+                toast.show();
             }
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        Log.i("LOCATION", cityname);
+        Log.i("Location", cityname);
         return cityname;
+    }
+
+
+    public boolean uploadNewAd(){
+        final int isUploaded = 0;
+        httpHelper = new HttpHelper();
+        new Thread(new Runnable() {
+            public void run() {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("species", newAd.species);
+                    jsonObject.put("breed", newAd.breed);
+                    jsonObject.put("name", newAd.name);
+                    jsonObject.put("birthday", newAd.birthday);
+                    jsonObject.put("sex", newAd.sex);
+                    jsonObject.put("location", newAd.location);
+                    jsonObject.put("owner", newAd.owner);
+                    jsonObject.put("info", newAd.info);
+                    jsonObject.put("price", newAd.price);
+                    jsonObject.put("available", newAd.available);
+                    jsonObject.put("favorite", newAd.favorite);
+                    jsonObject.put("image", newAd.photo);
+                    jsonObject.put("adId", newAd.adId);
+                    jsonObject.put("dateAdded", newAd.dateAdded);
+
+                final boolean res = httpHelper.postJSONObjectFromURL(POST_NEW_AD, jsonObject);
+                    handler.post(new Runnable() {
+                        public void run() {
+                            if (res) {
+                                Toast.makeText(AddActivity.this, "Uspešno ste dodali oglas na server!", Toast.LENGTH_LONG).show();
+                                Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
+                                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(loginIntent);
+                            } else {
+                                Toast.makeText(AddActivity.this, "Error!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+        if(isUploaded == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }

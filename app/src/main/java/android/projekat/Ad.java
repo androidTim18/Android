@@ -3,6 +3,7 @@ package android.projekat;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,22 +22,24 @@ public class Ad {
     public String owner;
     public String info;
     public String price;
-    public boolean available;
-    public boolean favorite;
+    public int available;
+    public int favorite;
     public Drawable photo;
     public ArrayList<Comment> comments;
 
 //new Ad - fisrt time adding
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, boolean available, boolean favorite,
+              String info, String price, int available, int favorite,
               byte[] imageInByte) {
         Random r = new Random();
 
         Integer a = (r.nextInt((9999-1000)+1)+1000);
 
         this.adId = a.toString();
-        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy.");
+        this.dateAdded = df.format(c);
         this.species = species;
         this.breed = breed;
         this.name = name;
@@ -49,19 +52,21 @@ public class Ad {
         this.owner = owner;
         this.info = info;
         this.price = price;
-        this.available = true;
-        this.favorite = false;
+        this.available = 1;
+        this.favorite = 0;
     }
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, boolean available, boolean favorite,
+              String info, String price, int available, int favorite,
               Drawable drw) {
         Random r = new Random();
 
         Integer a = (r.nextInt((9999 - 1000) + 1) + 1000);
 
         this.adId = a.toString();
-        this.dateAdded = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault()).format(new Date());
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy.");
+        this.dateAdded = df.format(c);
         this.species = species;
         this.breed = breed;
         this.name = name;
@@ -78,7 +83,7 @@ public class Ad {
     //Constructor with all param - imageInBytes
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, boolean available, boolean favorite,
+              String info, String price, int available, int favorite,
               byte[] imageInByte, String adId, String dateAdded) {
 
         this.adId = adId;
@@ -101,7 +106,7 @@ public class Ad {
     //Constructor with all param - drawable photo
     public Ad(String species, String breed, String name,
               String birthday, String sex, String location, String owner,
-              String info, String price, boolean available, boolean favorite,
+              String info, String price, int available, int favorite,
               Drawable drw, String adId, String dateAdded) {
 
         this.adId = adId;
@@ -119,7 +124,7 @@ public class Ad {
         this.available = available;
         this.favorite = favorite;
     }
-    public Ad(){
+    public Ad(String species, String breed, String name, String date, String sex, String user, String info, String price, String favorite, String string, String jsonObjectString, String available, byte[] images){
     };
 
     public String getAdId() {
@@ -214,19 +219,19 @@ public class Ad {
         this.price = price;
     }
 
-    public boolean isAvailable() {
+    public int isAvailable() {
         return available;
     }
 
-    public void setAvailable(boolean available) {
+    public void setAvailable(int available) {
         this.available = available;
     }
 
-    public boolean isFavorite() {
+    public int isFavorite() {
         return favorite;
     }
 
-    public void setFavorite(boolean favorite) {
+    public void setFavorite(int favorite) {
         this.favorite = favorite;
     }
 

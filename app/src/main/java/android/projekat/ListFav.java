@@ -66,9 +66,8 @@ public class ListFav extends Fragment implements AdapterView.OnItemClickListener
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
         SharedPreferences preferences = this.getActivity().getSharedPreferences("preferences", MODE_PRIVATE);
-        String user = new String();
-        user = ((SharedPreferences) preferences).getString("user", null);
-        if (user.equals("administrator")) {
+
+        if (((SharedPreferences) preferences).getString("userId", null) == "administrator") {
             Ad ad = (Ad) parent.getItemAtPosition(position);
             adDbHelper.deleteAd(ad.adId);
         }

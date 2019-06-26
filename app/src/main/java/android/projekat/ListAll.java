@@ -23,7 +23,7 @@ import static android.projekat.MainActivity.userDbHelper;
 public class ListAll extends Fragment implements AdapterView.OnItemLongClickListener,
         AdapterView.OnItemClickListener {
 
-    public AdAdapter adapter;
+    public static AdAdapter adapter;
     public static AdDbHelper adDbHelper;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,10 +69,11 @@ public class ListAll extends Fragment implements AdapterView.OnItemLongClickList
 
         SharedPreferences preferences = this.getActivity().getSharedPreferences("preferences", MODE_PRIVATE);
         String user = new String();
-        user = ((SharedPreferences) preferences).getString("userId", null);
-        if (userDbHelper.isAdmin(user)) {
+
+        if (((SharedPreferences) preferences).getString("userId", null).equals("administrator")) {
             Ad ad = (Ad) parent.getItemAtPosition(position);
             adDbHelper.deleteAd(ad.adId);
+            adapter.update(adDbHelper.readAds());
         }
         return false;
     }
